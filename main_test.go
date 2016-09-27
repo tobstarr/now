@@ -24,7 +24,7 @@ func TestIndex(t *testing.T) {
 		t.Fatalf("got status %s but expected 2x. body=%s", rsp.Status, string(b))
 	}
 	tests := []struct{ Has, Want interface{} }{
-		{string(b), "Fri Mar 04 10:20:00 +0000 2011"},
+		{string(b), "{\"current_time\":\"2011-03-04T10:20:00Z\"}\n"},
 	}
 	for i, tc := range tests {
 		if tc.Has != tc.Want {

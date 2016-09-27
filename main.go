@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"io"
 	"log"
 	"net/http"
@@ -30,7 +32,19 @@ func run(l *log.Logger) error {
 
 func index(now func() time.Time) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		io.WriteString(w, now().UTC().Format(time.RubyDate))
+		rsp := struct {
+			CurrentTime time.Time `json:"current_time"`
+		}{
+			CurrentTime: now().UTC(),
+		}
+		buf := &bytes.Buffer{}
+		err := json.NewEncoder(buf).Encode(rsp)
+		if err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		io.Copy(w, buf)
 		return
 	}
 }
